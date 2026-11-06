@@ -6,6 +6,12 @@ param(
     [string]$TargetServer = "SERVER_B",
     [string]$TargetDatabase = "DatabaseB",
 
+    [string]$SourceUser,
+    [string]$SourcePassword,
+
+    [string]$TargetUser,
+    [string]$TargetPassword,
+
     [bool]$DryRun = $true
 )
 
@@ -13,13 +19,20 @@ $ErrorActionPreference = "Stop"
 
 $logFile = ".\SyncStoredProcedures.log"
 
-# Integrated Security
-function New-Connection($server, $database) {
+# Connection (Integrated Security by default; SQL Auth when user/password provided)
+function New-Connection($server, $database, $user, $password) {
+
+    if ([string]::IsNullOrWhiteSpace($user)) {
+        $auth = "Integrated Security=True;"
+    }
+    else {
+        $auth = "User ID=$user;Password=$password;"
+    }
 
     $connectionString = @"
 Server=$server;
 Database=$database;
-Integrated Security=True;
+$auth
 Encrypt=True;
 TrustServerCertificate=False;
 Application Name=SP-Synchronizer;
@@ -117,8 +130,8 @@ function Execute-SqlBatches($connection, $script) {
     }
 }
 
-$sourceConnection = New-Connection $SourceServer $SourceDatabase
-$targetConnection = New-Connection $TargetServer $TargetDatabase
+$sourceConnection = New-Connection $SourceServer $SourceDatabase $SourceUser $SourcePassword
+$targetConnection = New-Connection $TargetServer $TargetDatabase $TargetUser $TargetPassword
 
 try {
 
