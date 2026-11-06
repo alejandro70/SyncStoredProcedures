@@ -34,7 +34,7 @@ Server=$server;
 Database=$database;
 $auth
 Encrypt=True;
-TrustServerCertificate=False;
+TrustServerCertificate=True;
 Application Name=SP-Synchronizer;
 "@ -replace "`r?`n", ""
 
