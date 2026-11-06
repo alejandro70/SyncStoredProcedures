@@ -200,7 +200,7 @@ GO
 
             Write-Host "[DRY RUN] No changes applied."
 
-            $script | Out-File ".\SP_$($source.Schema)_$($source.Name).sql" -Encoding utf8
+            $script | Out-File -LiteralPath ".\SP_$($source.Schema)_$($source.Name).sql" -Encoding utf8
 
             continue
         }
